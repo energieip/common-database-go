@@ -41,7 +41,7 @@ func (d *RethinkbDatabase) CreateDB(dbName string) error {
 }
 
 //CreateTable add new table in database
-func (d *RethinkbDatabase) CreateTable(dbName, tableName string) error {
+func (d *RethinkbDatabase) CreateTable(dbName, tableName string, model interface{}) error {
 	if d.session == nil {
 		return NewError("Database Error: session not connected")
 	}
@@ -66,7 +66,7 @@ func (d *RethinkbDatabase) ListenDBChange(dbName string) (*DBCursor, error) {
 }
 
 //ListenFilterTableChange listen table change
-func (d *RethinkbDatabase) ListenFilterTableChange(dbName, tableName string, criteria map[string]interface{}) (*DBCursor, error) {
+func (d *RethinkbDatabase) ListenFilterTableChange(dbName, tableName string, criteria interface{}) (*DBCursor, error) {
 	if d.session == nil {
 		return nil, NewError("Database Error: session not connected")
 	}
@@ -74,7 +74,7 @@ func (d *RethinkbDatabase) ListenFilterTableChange(dbName, tableName string, cri
 }
 
 //InsertRecord add a new record in database
-func (d *RethinkbDatabase) InsertRecord(dbName, tableName string, data map[string]interface{}) (string, error) {
+func (d *RethinkbDatabase) InsertRecord(dbName, tableName string, data interface{}) (string, error) {
 	if d.session == nil {
 		return "", NewError("Database Error: session not connected")
 	}
@@ -86,7 +86,7 @@ func (d *RethinkbDatabase) InsertRecord(dbName, tableName string, data map[strin
 }
 
 //UpdateRecord add a record in database
-func (d *RethinkbDatabase) UpdateRecord(dbName, tableName, id string, data map[string]interface{}) error {
+func (d *RethinkbDatabase) UpdateRecord(dbName, tableName, id string, data interface{}) error {
 	if d.session == nil {
 		return NewError("Database Error: session not connected")
 	}
@@ -95,7 +95,7 @@ func (d *RethinkbDatabase) UpdateRecord(dbName, tableName, id string, data map[s
 }
 
 //GetRecords return all matching record for criteria map
-func (d *RethinkbDatabase) GetRecords(dbName, tableName string, criteria map[string]interface{}) ([]interface{}, error) {
+func (d *RethinkbDatabase) GetRecords(dbName, tableName string, criteria interface{}) ([]interface{}, error) {
 	var records []interface{}
 	if d.session == nil {
 		return records, NewError("Database Error: session not connected")
@@ -109,7 +109,7 @@ func (d *RethinkbDatabase) GetRecords(dbName, tableName string, criteria map[str
 }
 
 //GetRecord return the first matching record for criteria map
-func (d *RethinkbDatabase) GetRecord(dbName, tableName string, criteria map[string]interface{}) (interface{}, error) {
+func (d *RethinkbDatabase) GetRecord(dbName, tableName string, criteria interface{}) (interface{}, error) {
 	var record interface{}
 	if d.session == nil {
 		return record, NewError("Database Error: session not connected")
@@ -121,21 +121,6 @@ func (d *RethinkbDatabase) GetRecord(dbName, tableName string, criteria map[stri
 	cursor.One(&record)
 	cursor.Close()
 	return record, nil
-}
-
-//RecordCount return record numbers
-func (d *RethinkbDatabase) RecordCount(dbName, tableName string) (int, error) {
-	if d.session == nil {
-		return 0, NewError("Database Error: session not connected")
-	}
-	cursor, err := r.DB(dbName).Table(tableName).Count().Run(d.session)
-	if err != nil {
-		return 0, err
-	}
-	var cnt int
-	cursor.One(&cnt)
-	cursor.Close()
-	return cnt, err
 }
 
 //FetchAllRecords get all database records
@@ -153,10 +138,10 @@ func (d *RethinkbDatabase) FetchAllRecords(dbName, tableName string) ([]interfac
 }
 
 //DeleteRecord remove a record from the database
-func (d *RethinkbDatabase) DeleteRecord(dbName, tableName, id string) error {
+func (d *RethinkbDatabase) DeleteRecord(dbName, tableName string, data interface{}) error {
 	if d.session == nil {
 		return NewError("Database Error: session not connected")
 	}
-	_, err := r.DB(dbName).Table(tableName).Get(id).Delete().Run(d.session)
+	_, err := r.DB(dbName).Table(tableName).Get(data).Delete().Run(d.session)
 	return err
 }

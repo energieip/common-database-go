@@ -20,19 +20,18 @@ func NewError(text string) error {
 
 // DatabaseInterface database abstraction layer
 type DatabaseInterface interface {
-	Initialize(DatabaseConfig) error
-	CreateDB(string) error
-	CreateTable(string, string) error
-	InsertRecord(dbName, tableName string, data map[string]interface{}) (string, error)
-	UpdateRecord(string, string, string, map[string]interface{}) error
-	GetRecords(dbName, tableName string, criteria map[string]interface{}) ([]interface{}, error)
-	GetRecord(dbName, tableName string, criteria map[string]interface{}) (interface{}, error)
-	RecordCount(dbName, tableName string) (int, error)
+	Initialize(config DatabaseConfig) error
+	CreateDB(dbName string) error
+	CreateTable(dbName, tableName string, model interface{}) error
+	InsertRecord(dbName, tableName string, data interface{}) (string, error)
+	UpdateRecord(dbName, tableName, id string, data interface{}) error
+	GetRecords(dbName, tableName string, criteria interface{}) ([]interface{}, error)
+	GetRecord(dbName, tableName string, criteria interface{}) (interface{}, error)
 	FetchAllRecords(dbName, tableName string) ([]interface{}, error)
-	DeleteRecord(dbName, tableName, id string) error
+	DeleteRecord(dbName, tableName string, data interface{}) error
 	ListenTableChange(dbName, tableName string) (*DBCursor, error)
 	ListenDBChange(dbName string) (*DBCursor, error)
-	ListenFilterTableChange(dbName, tableName string, criteria map[string]interface{}) (*DBCursor, error)
+	ListenFilterTableChange(dbName, tableName string, criteria interface{}) (*DBCursor, error)
 	Close() error
 }
 
