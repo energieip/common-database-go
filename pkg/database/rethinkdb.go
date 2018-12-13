@@ -142,6 +142,6 @@ func (d *RethinkbDatabase) DeleteRecord(dbName, tableName string, data interface
 	if d.session == nil {
 		return NewError("Database Error: session not connected")
 	}
-	_, err := r.DB(dbName).Table(tableName).Get(data).Delete().Run(d.session)
+	_, err := r.DB(dbName).Table(tableName).Filter(data).Delete().Run(d.session)
 	return err
 }
